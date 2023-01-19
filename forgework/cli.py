@@ -10,7 +10,7 @@ from forgecore.packages import forgepackage_installed
 from honcho.manager import Manager as HonchoManager
 
 
-@click.command("work")
+@click.command()
 def cli():
     """Start local development"""
     # TODO check docker is available first
@@ -79,7 +79,7 @@ def cli():
 
     manager.add_process(
         "django",
-        f"{manage_cmd} dbwait && {manage_cmd} migrate && {manage_cmd} runserver {runserver_port}",
+        f"forge-db wait && {manage_cmd} migrate && {manage_cmd} runserver {runserver_port}",
         env={
             **os.environ,
             **django_env,
@@ -130,7 +130,3 @@ def cli():
     manager.loop()
 
     sys.exit(manager.returncode)
-
-
-if __name__ == "__main__":
-    cli()
