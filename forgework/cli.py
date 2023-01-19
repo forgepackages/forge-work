@@ -74,12 +74,15 @@ def cli():
             f"stripe listen --forward-to localhost:{runserver_port}{os.environ['STRIPE_WEBHOOK_PATH']}",
         )
 
+    runserver_cmd = f"{manage_cmd} migrate && {manage_cmd} runserver {runserver_port}"
+
     if forgepackage_installed("db"):
-        manager.add_process("postgres", f"forge-db start --logs")
+        manager.add_process("postgres", f"forge db start --logs")
+        runserver_cmd = f"forge db wait && " + runserver_cmd
 
     manager.add_process(
         "django",
-        f"forge-db wait && {manage_cmd} migrate && {manage_cmd} runserver {runserver_port}",
+        runserver_cmd,
         env={
             **os.environ,
             **django_env,
